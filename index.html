@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Call Without Abort Example</title>
+    <title>API Call With Abort Example</title>
 </head>
 <body>  
-    <h1>API Calls without Abort on Retrigger</h1>
+    <h1>API Calls with Abort on Retrigger</h1>
     <label for="paramSelect">Select Param:</label>
     <select id="paramSelect">
         <option value="value1">Value 1</option>
@@ -37,9 +37,9 @@
         // Make the API call with XHR and handle abort
         function makeApiCall(endpoint, param, responseId) {
             // Abort the previous request if it exists
-            // if (xhrRequests[endpoint]) {
-            //     xhrRequests[endpoint].abort();
-            // }
+            if (xhrRequests[endpoint]) {
+                xhrRequests[endpoint].abort();
+            }
 
             // Create a new XMLHttpRequest
             const xhr = new XMLHttpRequest();

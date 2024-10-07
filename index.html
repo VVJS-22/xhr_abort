@@ -3,9 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>API Call Without Abort Example</title>
 </head>
-<body>
-    
+<body>  
+    <h1>API Calls without Abort on Retrigger</h1>
+    <label for="paramSelect">Select Param:</label>
+    <select id="paramSelect">
+        <option value="value1">Value 1</option>
+        <option value="value2">Value 2</option>
+    </select>
+
+    <h3>API Responses:</h3>
+    <div>
+        <p id="response1">Response 1: Waiting...</p>
+        <p id="response2">Response 2: Waiting...</p>
+        <p id="response3">Response 3: Waiting...</p>
+        <p id="response4">Response 4: Waiting...</p>
+        <p id="response5">Response 5: Waiting...</p>
+    </div>
+
+    <script>
+        const paramSelect = document.getElementById('paramSelect');
+
+        // To store the ongoing XMLHttpRequest instances
+        let xhrRequests = {
+            endpoint1: null,
+            endpoint2: null,
+            endpoint3: null,
+            endpoint4: null,
+            endpoint5: null
+        };
+
+        // Make the API call with XHR and handle abort
+        function makeApiCall(endpoint, param, responseId) {
+            // Abort the previous request if it exists
+            // if (xhrRequests[endpoint]) {
+            //     xhrRequests[endpoint].abort();
+            // }
+
+            // Create a new XMLHttpRequest
+            const xhr = new XMLHttpRequest();
+            xhrRequests[endpoint] = xhr;  // Save the current request
+
+            xhr.open('POST', `http://localhost:3000/api/${endpoint}`, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) { // Request is done
+                    if (xhr.status === 200) { // Success
+                        const response = JSON.parse(xhr.responseText);
+                        document.getElementById(responseId).innerText = `${response.message}, Count: ${response.count}`;
+                    } else if (xhr.status !== 0) { // Error but not aborted
+                        document.getElementById(responseId).innerText = `${endpoint} error: ${xhr.status}`;
+                    }
+                }
+            };
+
+            // // Handle when the request is aborted
+            // xhr.onabort = function () {
+            //     document.getElementById(responseId).innerText = `${endpoint} request aborted.`;
+            // };
+
+            // Send the request with the param in the body
+            xhr.send(JSON.stringify({ param }));
+        }
+
+        // Trigger the API calls on parameter change
+        paramSelect.addEventListener('change', () => {
+            const selectedParam = paramSelect.value;
+
+            makeApiCall('endpoint1', selectedParam, 'response1');
+            makeApiCall('endpoint2', selectedParam, 'response2');
+            makeApiCall('endpoint3', selectedParam, 'response3');
+            makeApiCall('endpoint4', selectedParam, 'response4');
+            makeApiCall('endpoint5', selectedParam, 'response5');
+        });
+
+        // Initial call
+        paramSelect.dispatchEvent(new Event('change'));
+    </script>
 </body>
 </html>
